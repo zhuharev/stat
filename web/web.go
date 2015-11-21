@@ -14,7 +14,7 @@ import (
 var (
 	statSrv *stat.Service
 	// StatHost used testing host
-	StatHost = "test.ru"
+	StatHost = "stat.zhuharev.ru"
 )
 
 func init() {
