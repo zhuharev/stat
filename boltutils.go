@@ -28,13 +28,13 @@ func (s *Store) CreateBucket(bucket string) error {
 	})
 }
 
-func (s *Store) Has(bucket string, key string) (has bool, e error) {
+func (s *Store) HasBytes(bucket string, key []byte) (has bool, e error) {
 	e = s.db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(bucket))
 		if b == nil {
 			return fmt.Errorf("bucket %s not exists", bucket)
 		}
-		v := b.Get([]byte(key))
+		v := b.Get(key)
 		if len(v) > 0 {
 			has = true
 		}
@@ -43,13 +43,17 @@ func (s *Store) Has(bucket string, key string) (has bool, e error) {
 	return
 }
 
-func (s *Store) Get(bucket string, key string) (id int64, e error) {
+func (s *Store) Has(bucket string, key string) (has bool, e error) {
+	return s.HasBytes(bucket, []byte(key))
+}
+
+func (s *Store) GetBytes(bucket string, key []byte) (id int64, e error) {
 	e = s.db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(bucket))
 		if b == nil {
 			return fmt.Errorf("bucket %s not exists", bucket)
 		}
-		v := b.Get([]byte(key))
+		v := b.Get(key)
 		if len(v) > 0 {
 			id = int64(btoi(v))
 			return nil
@@ -59,7 +63,11 @@ func (s *Store) Get(bucket string, key string) (id int64, e error) {
 	return
 }
 
-func (s *Store) InsertAutoInc(bucket string, key string) (int64, error) {
+func (s *Store) Get(bucket string, key string) (id int64, e error) {
+	return s.GetBytes(bucket, []byte(key))
+}
+
+func (s *Store) InsertAutoIncBytes(bucket string, key []byte) (int64, error) {
 	var res int64
 	e := s.db.Update(func(tx *bolt.Tx) (e error) {
 		// Retrieve the users bucket.
@@ -82,7 +90,7 @@ func (s *Store) InsertAutoInc(bucket string, key string) (int64, error) {
 		res = int64(id)
 
 		// Persist bytes to users bucket.
-		return b.Put([]byte(key), itob(id))
+		return b.Put(key, itob(id))
 	})
 	if e != nil {
 		return 0, e
@@ -90,13 +98,21 @@ func (s *Store) InsertAutoInc(bucket string, key string) (int64, error) {
 	return res, nil
 }
 
-func (s *Store) GetOrInsert(bucket string, key string) (id int64, e error) {
-	ok, _ := s.Has(bucket, key)
+func (s *Store) InsertAutoInc(bucket string, key string) (int64, error) {
+	return s.InsertAutoIncBytes(bucket, []byte(key))
+}
+
+func (s *Store) GetOrInsertBytes(bucket string, key []byte) (id int64, e error) {
+	ok, _ := s.HasBytes(bucket, key)
 	if ok {
-		return s.Get(bucket, key)
+		return s.GetBytes(bucket, key)
 	} else {
-		return s.InsertAutoInc(bucket, key)
+		return s.InsertAutoIncBytes(bucket, key)
 	}
+}
+
+func (s *Store) GetOrInsert(bucket string, key string) (id int64, e error) {
+	return s.GetOrInsertBytes(bucket, []byte(key))
 }
 
 // itob returns an 8-byte big endian representation of v.
@@ -110,6 +126,11 @@ func itob32(v int64) []byte {
 	b := make([]byte, 4)
 	binary.BigEndian.PutUint32(b, uint32(v))
 	return b
+}
+
+// itob returns an 8-byte big endian representation of v.
+func btoi32(b []byte) uint32 {
+	return binary.BigEndian.Uint32(b)
 }
 
 // itob returns an 8-byte big endian representation of v.

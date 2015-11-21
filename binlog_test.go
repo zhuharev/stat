@@ -33,7 +33,8 @@ func init() {
 func TestBinLog(t *testing.T) {
 	Convey("Test hitting", t, func() {
 		h := NewHit("google.com", "/", "http://google.com", "1.1.1.1", "google chrome", "123123123213", "12321312312312312312312")
-		bytes, e := h.AsBytes(testStore)
+		h.SetStore(testStore)
+		bytes, e := h.AsBytes()
 		So(e, ShouldEqual, nil)
 		So(len(bytes), ShouldEqual, 36)
 		Printf("%v\n", hex.EncodeToString(bytes))
@@ -60,7 +61,8 @@ func BenchmarkAppendBinLog40(b *testing.B) {
 	// run the Fib function b.N times
 	for n := 0; n < b.N; n++ {
 		h := NewHit("google.com", "/", "http://google.com", "1.1.1.1", "google chrome", "123123123213", "12321312312312312312312")
-		bytes, _ := h.AsBytes(testStore)
+		h.SetStore(testStore)
+		bytes, _ := h.AsBytes()
 
 		e := testBinLog.Append(bytes)
 		if e != nil {

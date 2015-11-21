@@ -27,3 +27,6 @@ _testmain.go
 archive
 .binlog
 .testbinlog
+testService
+testStore
+data
