@@ -22,9 +22,9 @@ func newMacaron() *macaron.Macaron {
 
 func handleHtml(ctx *macaron.Context) string {
 	ctx.Resp.Header().Set("Content-type", "text/html")
-	return `<a href="//` + StatHost + `/html">Site</a><img src='/stat.svg'><script>
-(new Image).src="//test.ru/hit?r"+escape(document.referrer)+";u"+escape(document.URL)+";"+Math.random()
-</script>`
+	return fmt.Sprintf(`<a href="http://%s/html">Site</a><img src='http://%s/stat.svg'><script>
+(new Image).src="http://%s/hit?r"+escape(document.referrer)+";u"+escape(document.URL)+";"+Math.random()
+</script>`, StatHost)
 }
 
 func handleIndex(ctx *macaron.Context) string {

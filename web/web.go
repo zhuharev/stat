@@ -3,15 +3,17 @@ package main
 import (
 	"encoding/base64"
 	"fmt"
+	"net/url"
+	"time"
+
 	"github.com/fatih/color"
 	"github.com/zhuharev/stat"
 	"gopkg.in/macaron.v1"
-	"net/url"
-	"time"
 )
 
 var (
-	statSrv  *stat.Service
+	statSrv *stat.Service
+	// StatHost used testing host
 	StatHost = "test.ru"
 )
 
@@ -21,7 +23,7 @@ func init() {
 	if e != nil {
 		panic(e)
 	}
-	go statSrv.ArchiveBinlogIfNeededEvery(time.Second * 5)
+	go statSrv.ArchiveBinlogIfNeededEvery(time.Hour * 24 * 30)
 }
 
 func main() {

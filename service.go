@@ -40,7 +40,7 @@ func (s *Service) AddSite(host string) error {
 var (
 	ErrUnknownSite = fmt.Errorf("unknown site")
 
-	UidCookieMaxAge = 60 * 60 * 60 * 24 * 366 * 5
+	UidCookieMaxAge = 60 * 60 * 24 * 366 * 5
 )
 
 func (s *Service) HandleHit(w http.ResponseWriter, req *http.Request) error {
