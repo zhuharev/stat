@@ -1,4 +1,4 @@
-![godoc](https://godoc.org/github.com/zhuharev/stat?status.svg)
+![https://godoc.org/github.com/zhuharev/stat](https://godoc.org/github.com/zhuharev/stat?status.svg)
 # stat
 stat package provide simple web tracking for your server and domain
 
